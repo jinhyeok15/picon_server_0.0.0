@@ -4,12 +4,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from rest_framework.decorators import permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 from config import res
 from . import serializers
 from picon.models import *
 import uuid
 # Create your views here.
-
+# jwt 데코레이터:
+# @permission_classes((IsAuthenticated,))
+# @authentication_classes((JSONWebTokenAuthentication,))
 
 # class Auth(APIView):
 
@@ -17,6 +23,8 @@ import uuid
 class AuthSuccess(APIView):
     user_serializer = serializers.UserSerializer
 
+    @permission_classes((IsAuthenticated,))
+    @authentication_classes((JSONWebTokenAuthentication,))
     def post(self, request):
         code = str(uuid.uuid4())
         if request.data['auth_type'] == 'email':
