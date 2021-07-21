@@ -12,10 +12,6 @@ from django.dispatch import receiver
 class Account(models.Model):
     user = models.OneToOneField(User, related_name='account', on_delete=models.CASCADE)
     user_pk = models.IntegerField(blank=True, null=True)
-    index_name = models.CharField(max_length=50, null=True, unique=True, validators=
-                                  [RegexValidator(r'^[a-z][a-z0-9]{6,19}$',
-                                                  '영어 소문자로 시작, 최소 7자 최대 20자까지 가능합니다.')])
-    pw = models.CharField(max_length=50, null=True)
     code = models.TextField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     nick_name = models.CharField(max_length=32, null=True)
@@ -46,7 +42,10 @@ def create_user_account(sender, instance, created, **kwargs):
 
 
 class UserInfo(models.Model):
-    user = models.OneToOneField('Account', related_name="user_info", on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="user_info", on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, validators=[
+        RegexValidator(r'[가-힣a-zA-Z_\-.]+', '이름이 올바른 형식이 아닙니다.')
+    ])
     birthday = models.CharField(max_length=16, validators=[
         RegexValidator(r'^(19|20)[0-9]{2}(1[0-2]|0[0-9])([0-2][0-9]|3[01])$', '생년월일을 바르게 입력해주세요.')
     ])
@@ -55,8 +54,8 @@ class UserInfo(models.Model):
 
 
 class Follow(models.Model):
-    from_follow = models.ForeignKey('Account', related_name='from_follow', on_delete=models.CASCADE)
-    to_follow = models.ForeignKey('Account', related_name='to_follow', on_delete=models.CASCADE)
+    from_follow = models.ForeignKey(User, related_name='from_follow', on_delete=models.CASCADE)
+    to_follow = models.ForeignKey(User, related_name='to_follow', on_delete=models.CASCADE)
     status = models.SmallIntegerField(default=1)  # 정상:1, 삭제:4
     modified = models.DateTimeField(auto_now=True)
 
@@ -68,7 +67,7 @@ class Follow(models.Model):
 
 
 class File(models.Model):
-    user = models.ForeignKey('Account', related_name='file', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='file', on_delete=models.CASCADE)
     file_url = models.CharField(max_length=512, unique=True)
     comment = models.CharField(max_length=200, null=True)
     status = models.SmallIntegerField(default=1)  # status = 0:삭제, 1:정상, 2:과거 프로필
@@ -81,7 +80,7 @@ class File(models.Model):
 
 
 class FeedBack(models.Model):
-    from_feed_back = models.ForeignKey('Account', related_name='from_feed_back', on_delete=models.CASCADE)
+    from_feed_back = models.ForeignKey(User, related_name='from_feed_back', on_delete=models.CASCADE)
     to_feed_back = models.ForeignKey('File', related_name='to_feed_back', on_delete=models.CASCADE)
     # 피드백 이모티콘 종류 (heart, like, bad, sad, happy)
     type = models.CharField(max_length=10, default='heart')
@@ -93,7 +92,7 @@ class FeedBack(models.Model):
 
 
 class Pick(models.Model):
-    from_pick = models.ForeignKey('Account', related_name='from_pick', on_delete=models.CASCADE)
+    from_pick = models.ForeignKey(User, related_name='from_pick', on_delete=models.CASCADE)
     to_pick = models.ForeignKey('File', related_name='to_pick', on_delete=models.CASCADE)
     status = models.SmallIntegerField(default=1)  # 1 정상, 4 삭제
     modified = models.DateTimeField(auto_now=True)

@@ -1,4 +1,5 @@
 from picon.models import *
+from django.contrib.auth.models import User
 from .datasets import *
 import re
 
@@ -13,6 +14,18 @@ def password_validation(pwd):
     if re.search('[`~!@#$%^&*]+', pwd) is None:
         return '비밀번호는 최소 1개 이상의 특수문자가 포함되어야 합니다.(`~!@#$%^&*).'
     return 'ok'
+
+
+def index_name_validation(id_name):
+    if re.search(r'^[a-z][a-z0-9]{6,19}$', id_name):
+        return 'ok'
+    return '영어 소문자로 시작, 최소 7자 최대 20자까지 가능합니다.'
+
+
+def index_name_unique_validation(id_name):
+    if User.objects.filter(username=id_name):
+        return False
+    return True
 
 
 def nick_name_validation(nk):

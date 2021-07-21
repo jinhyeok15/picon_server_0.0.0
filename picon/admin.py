@@ -12,7 +12,7 @@ admin.site.register(models.Pick)
 @admin.register(models.Account)
 class AccountAdmin(admin.ModelAdmin):
     list_display = [
-        'user', 'user_pk', 'index_name', 'created'
+        'user', 'user_pk', 'created'
     ]
 
     def short_content(self, post):
@@ -22,7 +22,7 @@ class AccountAdmin(admin.ModelAdmin):
 @admin.register(models.UserInfo)
 class UserInfoAdmin(admin.ModelAdmin):
     list_display = [
-        'id', 'user', 'birthday', 'sex', 'address'
+        'user', 'birthday', 'sex', 'address'
     ]
 
     def short_content(self, post):

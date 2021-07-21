@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
-        fields = '__all__'
+        fields = ('nick_name', 'status')
 
 
 class AccountInputSerializer(ModelSerializer):
