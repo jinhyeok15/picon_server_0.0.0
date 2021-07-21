@@ -9,10 +9,10 @@ admin.site.register(models.FeedBack)
 admin.site.register(models.Pick)
 
 
-@admin.register(models.User)
-class UserAdmin(admin.ModelAdmin):
+@admin.register(models.Account)
+class AccountAdmin(admin.ModelAdmin):
     list_display = [
-        'id', 'index_name', 'created'
+        'user', 'user_pk', 'index_name', 'created'
     ]
 
     def short_content(self, post):
