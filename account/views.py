@@ -3,17 +3,19 @@ from .validators import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
-# from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from django.contrib.auth.models import User
+
 from config import res
+from config.res import response_data, error_data
 from .serializers import *
+from picon.datasets import QuerySet
 from picon.models import *
+# from django.contrib.auth.models import User
 import uuid
 # Create your views here.
 # jwt 데코레이터:
+# from rest_framework.decorators import permission_classes, authentication_classes
+# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 # @permission_classes((IsAuthenticated,))
 # @authentication_classes((JSONWebTokenAuthentication,))
 
@@ -42,7 +44,7 @@ class AuthSuccess(APIView):
             return Response(response_data(404, res.NOT_EXIST_USER), status.HTTP_404_NOT_FOUND)
         if request.data['auth_type'] == 'email':
             email_data = {'email': request.data['input']}
-            serializer = AccountInputSerializer(queryset, data=email_data)
+            serializer = AccountAuthSerializer(queryset, data=email_data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(response_data(201, res.AUTH_SUCCESS, id=user.id), status.HTTP_201_CREATED)
@@ -50,7 +52,7 @@ class AuthSuccess(APIView):
             return Response(error_data(400, res.NOT_VALID, serializer.errors), status.HTTP_400_BAD_REQUEST)
         if request.data['auth_type'] == 'phone':
             phone_data = {'phone_number': request.data['input']}
-            serializer = AccountInputSerializer(queryset, data=phone_data)
+            serializer = AccountAuthSerializer(queryset, data=phone_data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(response_data(201, res.AUTH_SUCCESS, id=user.id), status.HTTP_201_CREATED)
@@ -109,7 +111,7 @@ class RegisterAccount(APIView):
             'nick_name': nick_name,
             'status': 1
         }
-        serializer = AccountSerializer(queryset, data=account_data)
+        serializer = AccountRegisterSerializer(queryset, data=account_data)
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -164,5 +166,33 @@ class UserLogin(APIView):
             return Response(response_data(400, res.LOGIN_FAIL), status.HTTP_400_BAD_REQUEST)
 
 
-# class SaveToken(APIView):
+class SaveToken(APIView):
 
+    def post(self, request):
+        try:
+            queryset = Account.objects.get(user_pk=request.data['id'])
+            queryset.code = request.data['code']
+            queryset.save()
+            return Response({}, status.HTTP_204_NO_CONTENT)
+        except Account.DoesNotExist:
+            return Response(response_data(404, res.NOT_EXIST_USER), status.HTTP_404_NOT_FOUND)
+
+
+class ShowRegisterInfo(APIView):
+
+    def get(self, request, pk):
+        user = QuerySet.get_obj(User, pk)
+        account = QuerySet.get_account(pk)
+        user_info = QuerySet.get_user_info(pk)
+        dataset = {
+            'id': user.id,
+            'index_name': user.username,
+            'nick_name': account.nick_name,
+            'email': account.email,
+            'phone_number': account.phone_number,
+            'name': user_info.name,
+            'birthday': user_info.birthday,
+            'sex': user_info.sex,
+            'address': user_info.address
+        }
+        return Response(response_data(200, res.OK, data=dataset), status.HTTP_200_OK)

@@ -9,4 +9,6 @@ urlpatterns = [
     path('register/info/', views.RegisterInfo.as_view()),
     path('quit/', views.QuitSession.as_view()),
     path('login/', views.UserLogin.as_view()),
+    path('savetok/', views.SaveToken.as_view()),
+    path('<int:pk>/info/', views.ShowRegisterInfo.as_view()),
 ]

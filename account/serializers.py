@@ -1,18 +1,18 @@
 from rest_framework.serializers import ModelSerializer
-from rest_framework import serializers
+# from rest_framework import serializers
 # from rest_framework.serializers import FileField
 
 from picon.models import *
 from django.contrib.auth.models import User
 
 
-class AccountSerializer(ModelSerializer):
+class AccountRegisterSerializer(ModelSerializer):
     class Meta:
         model = Account
         fields = ('nick_name', 'status')
 
 
-class AccountInputSerializer(ModelSerializer):
+class AccountAuthSerializer(ModelSerializer):
     class Meta:
         model = Account
         fields = ('email', 'phone_number')

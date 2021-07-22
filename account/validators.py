@@ -1,6 +1,6 @@
+# from django.contrib.auth.models import User
 from picon.models import *
-from django.contrib.auth.models import User
-from .datasets import *
+from picon.datasets import QuerySet, Element, Data
 import re
 
 
