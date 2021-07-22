@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 # from rest_framework.decorators import permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 # from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.contrib.auth.models import User
 from config import res
@@ -25,12 +25,12 @@ class AuthSuccess(APIView):
 
     def post(self, request):
         name_uuid = str(uuid.uuid4())
-        data = {
+        data = {  # 임시 계정 데이터 생성
             "username": f'{name_uuid}',
             "password": f'{name_uuid}'
         }
         serializer = CreateUserSerializer(data=data)
-        if serializer.is_valid():
+        if serializer.is_valid():  # 임시 계정 데이터 User테이블에 저장
             serializer.save()
         try:
             user = User.objects.get(username=f'{name_uuid}')
@@ -145,6 +145,24 @@ class QuitSession(APIView):
             return Response(response_data(404, res.NOT_EXIST_USER), status.HTTP_404_NOT_FOUND)
 
 
-# class Login(APIView):
-#     def post(self, request):
+class UserLogin(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+        try:
+            queryset = User.objects.get(username=username)
+            if queryset.check_password(password):
+                return Response(
+                    response_data(200, res.LOGIN_SUCCESS,
+                                  username=username, password=password, id=queryset.id),
+                    status.HTTP_200_OK
+                )
+            return Response(response_data(400, res.LOGIN_FAIL), status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response(response_data(400, res.LOGIN_FAIL), status.HTTP_400_BAD_REQUEST)
+
+
+# class SaveToken(APIView):
 

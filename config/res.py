@@ -23,6 +23,7 @@ def error_data(code, msg, e_res, **kwargs):
 
 # 200
 OK = '조회성공'
+LOGIN_SUCCESS = '로그인 성공'
 
 # 201
 CREATED = '생성완료'
@@ -38,6 +39,7 @@ NOT_EXIST_USER = '존재하지 않는 유저입니다.'
 SAME_ID = '본인을 팔로우할 수 없습니다.'
 NOT_VALID = '유효하지 않은 데이터입니다.'
 AUTH_FAIL = '인증에 실패했습니다.'
+LOGIN_FAIL = '아이디와 비밀번호가 올바르지 않습니다. 다시 입력해주세요.'
 
 # 403
 UPLOAD_ERROR = '업로드를 할 수 없습니다.'
